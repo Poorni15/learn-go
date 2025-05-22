@@ -3,6 +3,8 @@ package digitalwallet
 import "math/rand"
 
 const curr string = "INR"
+const CREDIT_TRANSACTION = "CREDIT"
+const DEBIT_TRANSACTION = "DEBIT"
 
 type Account struct {
 	accountNo    string
@@ -20,12 +22,12 @@ func CreateAccount(accountId string, user *User, accountNo string) *Account {
 
 func (account *Account) Deposit(amount float64) {
 	account.amount += amount
-	account.transHistory = append(account.transHistory, *CreateTransactionHistory(rand.Int(), account.amount))
+	account.transHistory = append(account.transHistory, *CreateTransactionHistory(rand.Int(), account.amount, CREDIT_TRANSACTION))
 }
 
 func (account *Account) Withdraw(amount float64) {
 	account.amount -= amount
-	account.transHistory = append(account.transHistory, *CreateTransactionHistory(rand.Int(), account.amount))
+	account.transHistory = append(account.transHistory, *CreateTransactionHistory(rand.Int(), account.amount, DEBIT_TRANSACTION))
 }
 
 func (account Account) Balance() float64 {

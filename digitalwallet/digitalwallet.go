@@ -3,9 +3,11 @@ package digitalwallet
 import (
 	"errors"
 	"fmt"
+	"sync"
 )
 
 type DigitalWallet struct {
+	mu   sync.Mutex
 	user []*User
 }
 
@@ -19,10 +21,20 @@ func (digitalWallet *DigitalWallet) AddUser(user *User) {
 }
 
 func (digitalWallet *DigitalWallet) AddAccount(account *Account) {
-	digitalWallet.user.AddAccount(account)
+	users := digitalWallet.user
+	var foundUser *User
+	for i := range users {
+		if users[i].name == account.user.name {
+			foundUser = users[i]
+			break
+		}
+	}
+	foundUser.AddAccount(account)
 }
 
 func (digitalWallet *DigitalWallet) TransferFund(from *Account, to *Account, amount float64) error {
+	defer digitalWallet.mu.Unlock()
+	digitalWallet.mu.Lock()
 	if from.Balance() < amount {
 		return errors.New("Insufficient Fund")
 	}
