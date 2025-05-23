@@ -17,5 +17,42 @@
                 <constraints unique="true" nullable="false"/>
             </column>
             </createTable>
+             <rollback>
+                <dropTable tableName="users"/>
+            </rollback>
     </changeSet>
+    <changeSet  id="2"  author="Poorni">  
+        <addColumn  tableName="users">  
+            <column  name="created_at"  type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>  
+        </addColumn>  
+         <sql>
+        ALTER TABLE users
+        ADD CONSTRAINT validate_email_format
+        CHECK (email LIKE '%@%');
+       </sql>
+       <rollback>
+            <sql>
+            ALTER TABLE users DROP CONSTRAINT validate_email_format
+            ALTER TABLE users DROP COLUMN created_at
+            </sql>
+       </rollback>
+    </changeSet>   
+    <changeSet id="3" author="Poorni">
+        <insert tableName="users">
+            <column name="id" value="ea5bc0ab-6ccf-4791-a048-694a5be1d309"/>
+            <column name="name" value="Alice" />
+            <column name="email" value="alice@example.com" />
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="8d1208fc-f401-496c-9cb8-483fef121234"/>
+            <column name="name" value="Bob" />
+            <column name="email" value="bob@example.com" />
+        </insert>
+        <rollback>
+            <sql>
+            DELETE FROM users WHERE id="ea5bc0ab-6ccf-4791-a048-694a5be1d309"
+            DELETE FROM users WHERE id="8d1208fc-f401-496c-9cb8-483fef121234"
+            </sql>
+        </rollback>
+   </changeSet>   
 </databaseChangeLog>
